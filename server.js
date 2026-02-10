@@ -15,7 +15,8 @@ let serviceAccount;
 if (process.env.FIREBASE_SERVICE_ACCOUNT_JSON) {
   serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON);
 } else {
-  serviceAccount = require(path.join(__dirname, 'serviceAccountKey.json'));
+  // optional local fallback (keep this file OUT of GitHub)
+  serviceAccount = require('./serviceAccountKey.json');
 }
 
 admin.initializeApp({
