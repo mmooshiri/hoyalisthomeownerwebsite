@@ -1,3 +1,4 @@
+// server.js
 const express = require('express');
 const path = require('path');
 const admin = require('firebase-admin');
@@ -6,16 +7,24 @@ const app = express();
 
 // ✅ Parse form posts
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, "public")));
 
+// ✅ Serve ONLY public assets (safe)
+const PUBLIC_DIR = path.join(__dirname, 'public');
+app.use(express.static(PUBLIC_DIR, {
+  // cache public assets (bg image) for speed in production
+  maxAge: '7d',
+  etag: true
+}));
 
-// ✅ Initialize Firebase Admin (LOCAL / SIMPLE)
+// -------------------------------------------
+// ✅ Initialize Firebase Admin (Heroku-safe)
+// -------------------------------------------
 let serviceAccount;
 
 if (process.env.FIREBASE_SERVICE_ACCOUNT_JSON) {
   serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON);
 } else {
-  // optional local fallback (keep this file OUT of GitHub)
+  // Local fallback only (DO NOT commit this file to GitHub)
   serviceAccount = require('./serviceAccountKey.json');
 }
 
@@ -45,7 +54,6 @@ async function geocodeZipWithGoogle(zip) {
   if (!resp.ok) throw new Error(`Google Geocoding HTTP error: ${resp.status}`);
 
   const data = await resp.json();
-
   if (data.status !== 'OK' || !data.results?.length) {
     throw new Error(`Google Geocoding failed: ${data.status}`);
   }
@@ -81,27 +89,33 @@ async function geocodeZipWithGoogle(zip) {
   };
 }
 
+// Helper: no-store headers for dynamic endpoints
+function noStore(res) {
+  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+}
+
 // -------------------------------------------
-// 🔁 Root redirect FIRST (SMS/install flow)
+// ✅ Root: send desktop users to the landing page (prevents loops)
 // -------------------------------------------
 app.get('/', (req, res) => {
-  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
-  return res.redirect(302, '/go');
+  noStore(res);
+  return res.redirect(302, '/homeowners');
 });
 
 // -------------------------------------------
 // 🏠 Homeowners landing page
+// Served from /public/homeowners.html
 // -------------------------------------------
 app.get(['/homeowners', '/homeowners/'], (req, res) => {
-  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
-  return res.sendFile(path.join(__dirname, 'homeowners.html'));
+  noStore(res);
+  return res.sendFile(path.join(PUBLIC_DIR, 'homeowners.html'));
 });
 
 // -------------------------------------------
 // 📝 Lead capture endpoint → SAVE into Firestore
 // -------------------------------------------
 app.post(['/lead', '/lead/'], async (req, res) => {
-  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+  noStore(res);
 
   const publicUserName   = String(req.body.name || '').trim();
   const publicUserEmail  = String(req.body.email || '').trim().toLowerCase();
@@ -171,7 +185,7 @@ app.post(['/lead', '/lead/'], async (req, res) => {
     publicUserPhone = rawPhone;
   }
 
-  // Budget optional, but if provided must be a valid number
+  // Budget optional, but if provided must be valid digits
   if (rawBudget && (!budgetDigits || isNaN(budgetNumber) || budgetNumber < 0)) {
     return res.status(400).type('html').send(`
       <h2>Budget format</h2>
@@ -192,20 +206,24 @@ app.post(['/lead', '/lead/'], async (req, res) => {
     // 3) Batch write (atomic)
     const batch = db.batch();
 
-    batch.set(publicDocRef, {
+    // Build payload (only set budgetText if provided)
+    const publicPayload = {
       publicUserUID,
       publicUserName,
       publicUserEmail,
       publicUserPhone,
       projectText,
-
-      budgetText: budgetNumber, // ✅ Firestore number (or null)
       readyToHire,
       urgent,
-
       publicUserConcent,
       postedDate: admin.firestore.FieldValue.serverTimestamp(),
-    });
+    };
+
+    if (budgetNumber !== null) {
+      publicPayload.budgetText = budgetNumber; // ✅ Firestore number
+    }
+
+    batch.set(publicDocRef, publicPayload);
 
     batch.set(locationDocRef, {
       uid: publicUserUID,
@@ -222,12 +240,15 @@ app.post(['/lead', '/lead/'], async (req, res) => {
 
     await batch.commit();
 
+    // If your frontend uses fetch and swaps to a success screen, 204 works well.
+    // But keeping HTML is fine too.
     return res.type('html').send(`
-      <h2>Thanks! Your project was submitted.</h2>
+      <h2>✅ Thanks! Your project was submitted.</h2>
       <p>Location saved for ZIP <b>${zip}</b>.</p>
-      <p>Reference: <b>${publicUserUID}</b></p>
+      <p><a href="/go">Download the app</a></p>
       <p><a href="/homeowners">Submit another request</a></p>
     `);
+
   } catch (err) {
     console.error('Lead save/geocode failed:', err);
     return res.status(500).type('html').send(`
@@ -239,30 +260,28 @@ app.post(['/lead', '/lead/'], async (req, res) => {
 });
 
 // -------------------------------------------
-// Serve static files AFTER routes
-// -------------------------------------------
-app.use(express.static(__dirname, { extensions: ['html'] }));
-
-// -------------------------------------------
-// /download route
+// /download route (safe HTTPS redirect)
+// Desktop fallback goes to homeowners page (NO LOOP)
 // -------------------------------------------
 app.get(['/download', '/download/'], (req, res) => {
   const ua = String(req.headers['user-agent'] || '').toLowerCase();
-  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+  noStore(res);
 
   const IOS_HTTPS = 'https://apps.apple.com/us/app/hoyalist/id6740706168';
   const AND_HTTPS = 'https://play.google.com/store/apps/details?id=com.hoyalist.hoyalist';
 
   if (ua.includes('android')) return res.redirect(302, AND_HTTPS);
   if (ua.includes('iphone') || ua.includes('ipad') || ua.includes('ipod')) return res.redirect(302, IOS_HTTPS);
-  return res.redirect(302, 'https://hoyalistapp.com');
+
+  return res.redirect(302, '/homeowners');
 });
 
 // -------------------------------------------
-// /go route
+// /go route (direct-open for app store links)
+// Desktop fallback goes to homeowners page (NO LOOP)
 // -------------------------------------------
 app.get(['/go', '/go/'], (req, res) => {
-  const ua = String(req.headers['user-agent'] || '');
+  const ua  = String(req.headers['user-agent'] || '');
   const ual = ua.toLowerCase();
 
   const PKG = 'com.hoyalist.hoyalist';
@@ -285,18 +304,19 @@ app.get(['/go', '/go/'], (req, res) => {
     ual.includes('twitter') || ual.includes('snapchat') ||
     ual.includes('pinterest') || ual.includes('gsa');
 
-  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+  noStore(res);
 
   if (isAndroid) {
     if (!isInApp) return res.redirect(302, AND_INTENT);
     return res.redirect(302, AND_HTTPS);
   }
+
   if (isIOS) {
     if (!isInApp) return res.redirect(302, IOS_ITMS);
     return res.redirect(302, IOS_HTTPS);
   }
 
-  return res.redirect(302, 'https://hoyalistapp.com');
+  return res.redirect(302, '/homeowners');
 });
 
 // -------------------------------------------
