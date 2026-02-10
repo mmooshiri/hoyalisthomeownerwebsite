@@ -1,0 +1,548 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Post Your Project - HoyaList</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <style>
+    :root{
+      --primary:#0a7cff;
+      --danger:#b00020;
+      --text:#111;
+      --muted:#5a5a5a;
+      --card:#ffffffcc;
+      --border:#ffffff55;
+      --shadow:0 20px 60px rgba(0,0,0,.25);
+      --radius:18px;
+    }
+
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      color:var(--text);
+      min-height:100vh;
+      background:
+        linear-gradient(180deg, rgba(0,0,0,.55), rgba(0,0,0,.25)),
+        url("/bg.jpg");
+      background-size:cover;
+      background-position:center;
+      background-attachment:fixed;
+    }
+
+    .wrap{
+      max-width:720px;
+      margin:0 auto;
+      padding:34px 18px 60px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin-bottom:18px;
+      color:#fff;
+    }
+
+    .logoDot{
+      width:14px;height:14px;border-radius:50%;
+      background:var(--primary);
+      box-shadow:0 0 0 6px rgba(10,124,255,.25);
+    }
+
+    .brand h1{
+      font-size:20px;
+      margin:0;
+      font-weight:900;
+      letter-spacing:.2px;
+    }
+
+    .hero{
+      color:#fff;
+      margin-bottom:18px;
+    }
+
+    .heroTitle{
+      font-size:34px;
+      line-height:1.05;
+      margin:0 0 10px;
+      font-weight:950;
+      letter-spacing:-.5px;
+    }
+
+    .heroSub{
+      margin:0;
+      max-width:560px;
+      line-height:1.45;
+      font-size:15px;
+      color:rgba(255,255,255,.92);
+    }
+
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      padding:18px;
+      box-shadow:var(--shadow);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    label{
+      display:block;
+      font-weight:800;
+      margin:14px 0 6px;
+      font-size:14px;
+    }
+
+    input, textarea{
+      width:100%;
+      padding:12px 12px;
+      border:1px solid #d9d9d9;
+      border-radius:14px;
+      font-size:16px;
+      box-sizing:border-box;
+      outline:none;
+      background:#fff;
+    }
+
+    input:focus, textarea:focus{
+      border-color:rgba(10,124,255,.55);
+      box-shadow:0 0 0 4px rgba(10,124,255,.12);
+    }
+
+    textarea{
+      min-height:130px;
+      resize:vertical;
+    }
+
+    .small{
+      font-size:12px;
+      color:var(--muted);
+      margin-top:6px;
+      line-height:1.35;
+    }
+
+    .row{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    .col{
+      flex:1;
+      min-width:220px;
+    }
+
+    .errorText{
+      display:none;
+      margin-top:7px;
+      font-size:12px;
+      line-height:1.35;
+      color:var(--danger);
+      font-weight:700;
+    }
+
+    .invalid{
+      border-color:var(--danger) !important;
+      outline-color:var(--danger) !important;
+    }
+
+    .checkRow{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      margin-top:12px;
+      padding:12px 12px;
+      background:#ffffffaa;
+      border:1px solid #ffffff88;
+      border-radius:14px;
+    }
+
+    .checkRow input{
+      width:auto;
+      margin-top:3px;
+      transform:scale(1.1);
+    }
+
+    .btn{
+      margin-top:18px;
+      width:100%;
+      padding:14px 16px;
+      border:0;
+      border-radius:16px;
+      font-size:18px;
+      font-weight:900;
+      cursor:pointer;
+      background:linear-gradient(90deg, #0a7cff, #005bd6);
+      color:#fff;
+      box-shadow:0 12px 28px rgba(10,124,255,.35);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+    }
+
+    .btn:active{transform:scale(0.99)}
+    .btn[disabled]{opacity:.7; cursor:not-allowed}
+
+    /* Spinner */
+    .spinner{
+      width:18px;height:18px;
+      border:3px solid rgba(255,255,255,.45);
+      border-top-color:#fff;
+      border-radius:50%;
+      animation:spin .9s linear infinite;
+      display:none;
+    }
+    @keyframes spin { to { transform:rotate(360deg); } }
+
+    .footerNote{
+      margin-top:14px;
+      font-size:12px;
+      color:rgba(255,255,255,.85);
+      line-height:1.35;
+      text-align:center;
+    }
+
+    /* Success view */
+    .successWrap{display:none}
+    .successTitle{
+      font-size:26px;
+      margin:0 0 10px;
+      font-weight:950;
+    }
+    .successSub{margin:0 0 14px; color:#333; line-height:1.45}
+    .storeBtns{display:flex; gap:12px; flex-wrap:wrap; margin-top:10px}
+    .storeBtn{
+      flex:1;
+      min-width:210px;
+      text-decoration:none;
+      padding:14px 14px;
+      border-radius:14px;
+      font-weight:900;
+      text-align:center;
+      border:1px solid #e6e6e6;
+      background:#fff;
+      box-shadow:0 10px 20px rgba(0,0,0,.10);
+      color:#111;
+    }
+    .storeBtn.primary{
+      background:linear-gradient(90deg, #0a7cff, #005bd6);
+      color:#fff;
+      border:0;
+    }
+    .tiny{font-size:12px;color:#666;margin-top:10px}
+
+    @media (max-width:520px){
+      .heroTitle{font-size:28px}
+      .storeBtn{min-width:100%}
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+
+    <div class="brand">
+      <div class="logoDot"></div>
+      <h1>HoyaList</h1>
+    </div>
+
+    <div class="hero">
+      <h2 class="heroTitle">Post your project.<br>Get local contractors.</h2>
+      <p class="heroSub">
+        Enter your project details and ZIP code. Contractors near you can respond quickly.
+        This takes less than a minute.
+      </p>
+    </div>
+
+    <!-- FORM CARD -->
+    <div id="formCard" class="card">
+      <form id="leadForm" method="POST" action="/lead" novalidate>
+
+        <label>Your name</label>
+        <input id="name" name="name" required maxlength="80" autocomplete="name" />
+
+        <label>Email</label>
+        <input id="email" name="email" type="email" required maxlength="120"
+               autocomplete="email" placeholder="name@email.com" />
+        <div id="emailError" class="errorText">
+          Please enter a valid email address (example: <b>name@email.com</b>).
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <label>ZIP Code (required)</label>
+            <input id="zip" name="zip" required inputmode="numeric"
+                   maxlength="5" placeholder="06119" />
+            <div class="small">Enter a 5-digit ZIP code (example: <b>06119</b>).</div>
+            <div id="zipError" class="errorText">
+              ZIP code must be exactly 5 digits (example: <b>06119</b>).
+            </div>
+          </div>
+
+          <div class="col">
+            <label>Phone (optional)</label>
+            <input id="phone" name="phone" inputmode="tel"
+                   placeholder="+18885551234" maxlength="20" autocomplete="tel" />
+            <div class="small">If you add a phone number, use: <b>+18885551234</b></div>
+            <div id="phoneError" class="errorText">
+              Phone number must be in E.164 format like <b>+18885551234</b>.
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <label>Budget (optional)</label>
+            <input id="budgetText" name="budgetText" inputmode="numeric"
+                   placeholder="2500" maxlength="10" />
+            <div class="small">Numbers only (example: <b>2500</b>).</div>
+            <div id="budgetError" class="errorText">
+              Budget must be numbers only (example: <b>2500</b>).
+            </div>
+          </div>
+        </div>
+
+        <div class="checkRow">
+          <input id="readyToHire" type="checkbox" name="readyToHire" value="yes" />
+          <div class="small">
+            <b>Ready to hire</b> (optional): I’m ready to hire a contractor soon.
+          </div>
+        </div>
+
+        <div class="checkRow">
+          <input id="urgent" type="checkbox" name="urgent" value="yes" />
+          <div class="small">
+            <b>Urgent</b> (optional): This project is urgent and I need help quickly.
+          </div>
+        </div>
+
+        <label>What do you need done?</label>
+        <textarea id="project" name="project" required maxlength="1200"
+          placeholder="Example: Replace water heater. Need it this week."></textarea>
+
+        <div class="checkRow">
+          <input id="concent" type="checkbox" name="concent" value="yes" />
+          <div class="small">
+            <b>Consent:</b> I agree to receive messages about my request from HoyaList.
+            Msg &amp; data rates may apply. Reply <b>STOP</b> to opt out.
+            <div id="consentError" class="errorText" style="margin-top:8px;">
+              Please check this box to submit your request.
+            </div>
+          </div>
+        </div>
+
+        <!-- Submit button with spinner -->
+        <button id="submitBtn" class="btn" type="submit">
+          <span id="submitText">Submit project</span>
+          <span id="spinner" class="spinner"></span>
+        </button>
+
+        <div class="small" style="margin-top:12px;">
+          We use your ZIP code to match you with nearby contractors.
+          We only use your phone number if you provide it.
+        </div>
+      </form>
+    </div>
+
+    <!-- SUCCESS CARD (shown after successful submit) -->
+    <div id="successCard" class="card successWrap">
+      <h3 class="successTitle">✅ Thanks! Your project was submitted.</h3>
+      <p class="successSub">
+        Download the HoyaList app to see responses and manage your request.
+      </p>
+
+      <div class="storeBtns">
+        <a class="storeBtn primary" href="/go">Get the app (auto)</a>
+        <a class="storeBtn" href="https://apps.apple.com/us/app/hoyalist/id6740706168">Download on iPhone</a>
+        <a class="storeBtn" href="https://play.google.com/store/apps/details?id=com.hoyalist.hoyalist">Download on Android</a>
+      </div>
+
+      <div class="tiny">
+        If you’re in an in-app browser (Instagram/Facebook), tap ••• and choose “Open in browser” for best results.
+      </div>
+    </div>
+
+    <div class="footerNote">
+      Powered by HoyaList • Your info is used only for contractor matching.
+    </div>
+
+  </div>
+
+  <script>
+    const E164_RE  = /^\+[1-9]\d{9,14}$/;
+    const ZIP_RE   = /^\d{5}$/;
+    const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
+    const BUDGET_RE = /^\d+$/;
+
+    const form = document.getElementById('leadForm');
+
+    const emailInput = document.getElementById('email');
+    const emailError = document.getElementById('emailError');
+
+    const zipInput = document.getElementById('zip');
+    const zipError = document.getElementById('zipError');
+
+    const phoneInput = document.getElementById('phone');
+    const phoneError = document.getElementById('phoneError');
+
+    const budgetInput = document.getElementById('budgetText');
+    const budgetError = document.getElementById('budgetError');
+
+    const consentInput = document.getElementById('concent');
+    const consentError = document.getElementById('consentError');
+
+    const submitBtn = document.getElementById('submitBtn');
+    const spinner = document.getElementById('spinner');
+    const submitText = document.getElementById('submitText');
+
+    const formCard = document.getElementById('formCard');
+    const successCard = document.getElementById('successCard');
+
+    function validateEmail(showUI = true) {
+      const val = (emailInput.value || '').trim();
+      const ok = EMAIL_RE.test(val);
+      if (showUI) {
+        emailInput.classList.toggle('invalid', !ok);
+        emailError.style.display = ok ? 'none' : 'block';
+      }
+      return ok;
+    }
+
+    function validateZip(showUI = true) {
+      const val = (zipInput.value || '').trim();
+      const ok = ZIP_RE.test(val);
+      if (showUI) {
+        zipInput.classList.toggle('invalid', !ok);
+        zipError.style.display = ok ? 'none' : 'block';
+      }
+      return ok;
+    }
+
+    function validatePhone(showUI = true) {
+      const val = (phoneInput.value || '').trim();
+      const ok = (val === '') || E164_RE.test(val);
+      if (showUI) {
+        phoneInput.classList.toggle('invalid', !ok);
+        phoneError.style.display = ok ? 'none' : 'block';
+      }
+      return ok;
+    }
+
+    function validateBudget(showUI = true) {
+      const val = (budgetInput.value || '').trim();
+      const ok = (val === '') || BUDGET_RE.test(val);
+      if (showUI) {
+        budgetInput.classList.toggle('invalid', !ok);
+        budgetError.style.display = ok ? 'none' : 'block';
+      }
+      return ok;
+    }
+
+    function validateConsent(showUI = true) {
+      const ok = consentInput.checked === true;
+      if (showUI) consentError.style.display = ok ? 'none' : 'block';
+      return ok;
+    }
+
+    // ZIP: digits only, max 5
+    zipInput.addEventListener('input', () => {
+      zipInput.value = zipInput.value.replace(/\D/g, '').slice(0, 5);
+      if (zipInput.value.length < 5) {
+        zipInput.classList.remove('invalid');
+        zipError.style.display = 'none';
+      }
+    });
+
+    // Budget: digits only
+    budgetInput.addEventListener('input', () => {
+      budgetInput.value = budgetInput.value.replace(/\D/g, '').slice(0, 10);
+      if (budgetInput.value === '') {
+        budgetInput.classList.remove('invalid');
+        budgetError.style.display = 'none';
+      }
+    });
+
+    // Validate on blur
+    emailInput.addEventListener('blur', () => validateEmail(true));
+    zipInput.addEventListener('blur', () => validateZip(true));
+    phoneInput.addEventListener('blur', () => validatePhone(true));
+    budgetInput.addEventListener('blur', () => validateBudget(true));
+
+    // Hide warnings while typing (when empty)
+    emailInput.addEventListener('input', () => {
+      if ((emailInput.value || '').trim() === '') {
+        emailInput.classList.remove('invalid');
+        emailError.style.display = 'none';
+      }
+    });
+
+    phoneInput.addEventListener('input', () => {
+      if ((phoneInput.value || '').trim() === '') {
+        phoneInput.classList.remove('invalid');
+        phoneError.style.display = 'none';
+      }
+    });
+
+    consentInput.addEventListener('change', () => validateConsent(true));
+
+    // ✅ Submit via fetch so we can show spinner + success page
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const emailOk = validateEmail(true);
+      const zipOk = validateZip(true);
+      const phoneOk = validatePhone(true);
+      const budgetOk = validateBudget(true);
+      const consentOk = validateConsent(true);
+
+      if (!emailOk) { emailInput.focus(); return; }
+      if (!zipOk) { zipInput.focus(); return; }
+      if (!phoneOk) { phoneInput.focus(); return; }
+      if (!budgetOk) { budgetInput.focus(); return; }
+      if (!consentOk) {
+        consentInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+
+      // ✅ disable button + show spinner
+      submitBtn.disabled = true;
+      spinner.style.display = 'inline-block';
+      submitText.textContent = "Submitting...";
+
+      try {
+        const formData = new FormData(form);
+        const body = new URLSearchParams(formData);
+
+        const resp = await fetch(form.action, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: body.toString()
+        });
+
+        if (!resp.ok) {
+          const html = await resp.text();
+          // Show server error page (keeps debugging easy)
+          document.open();
+          document.write(html);
+          document.close();
+          return;
+        }
+
+        // ✅ success: swap to success card
+        formCard.style.display = 'none';
+        successCard.style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      } catch (err) {
+        alert("Sorry — we could not submit your request. Please try again.");
+        submitBtn.disabled = false;
+        spinner.style.display = 'none';
+        submitText.textContent = "Submit project";
+      }
+    });
+  </script>
+</body>
+</html>
