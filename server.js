@@ -110,7 +110,10 @@ app.get(['/homeowners', '/homeowners/'], (req, res) => {
   noStore(res);
   return res.sendFile(path.join(PUBLIC_DIR, 'homeowners.html'));
 });
-
+app.get(['/success', '/success/'], (req, res) => {
+  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+  return res.sendFile(path.join(PUBLIC_DIR, 'success.html'));
+});
 // -------------------------------------------
 // 📝 Lead capture endpoint → SAVE into Firestore
 // -------------------------------------------
