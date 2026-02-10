@@ -5,6 +5,15 @@
   <title>Post Your Project - HoyaList</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=AW-16728099747"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'AW-16728099747');
+  </script>
+
   <style>
     :root{
       --primary:#0a7cff;
@@ -186,7 +195,6 @@
     .btn:active{transform:scale(0.99)}
     .btn[disabled]{opacity:.7; cursor:not-allowed}
 
-    /* Spinner */
     .spinner{
       width:18px;height:18px;
       border:3px solid rgba(255,255,255,.45);
@@ -204,49 +212,7 @@
       line-height:1.35;
       text-align:center;
     }
-
-    /* Success view */
-    .successWrap{display:none}
-    .successTitle{
-      font-size:26px;
-      margin:0 0 10px;
-      font-weight:950;
-    }
-    .successSub{margin:0 0 14px; color:#333; line-height:1.45}
-    .storeBtns{display:flex; gap:12px; flex-wrap:wrap; margin-top:10px}
-    .storeBtn{
-      flex:1;
-      min-width:210px;
-      text-decoration:none;
-      padding:14px 14px;
-      border-radius:14px;
-      font-weight:900;
-      text-align:center;
-      border:1px solid #e6e6e6;
-      background:#fff;
-      box-shadow:0 10px 20px rgba(0,0,0,.10);
-      color:#111;
-    }
-    .storeBtn.primary{
-      background:linear-gradient(90deg, #0a7cff, #005bd6);
-      color:#fff;
-      border:0;
-    }
-    .tiny{font-size:12px;color:#666;margin-top:10px}
-
-    @media (max-width:520px){
-      .heroTitle{font-size:28px}
-      .storeBtn{min-width:100%}
-    }
   </style>
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=AW-16728099747"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'AW-16728099747');
-</script>
 </head>
 
 <body>
@@ -265,8 +231,7 @@
       </p>
     </div>
 
-    <!-- FORM CARD -->
-    <div id="formCard" class="card">
+    <div class="card">
       <form id="leadForm" method="POST" action="/lead" novalidate>
 
         <label>Your name</label>
@@ -342,7 +307,6 @@
           </div>
         </div>
 
-        <!-- Submit button with spinner -->
         <button id="submitBtn" class="btn" type="submit">
           <span id="submitText">Submit project</span>
           <span id="spinner" class="spinner"></span>
@@ -353,24 +317,6 @@
           We only use your phone number if you provide it.
         </div>
       </form>
-    </div>
-
-    <!-- SUCCESS CARD (shown after successful submit) -->
-    <div id="successCard" class="card successWrap">
-      <h3 class="successTitle">✅ Thanks! Your project was submitted.</h3>
-      <p class="successSub">
-        Download the HoyaList app to see responses and manage your request.
-      </p>
-
-      <div class="storeBtns">
-        <a class="storeBtn primary" href="/go">Get the app (auto)</a>
-        <a class="storeBtn" href="https://apps.apple.com/us/app/hoyalist/id6740706168">Download on iPhone</a>
-        <a class="storeBtn" href="https://play.google.com/store/apps/details?id=com.hoyalist.hoyalist">Download on Android</a>
-      </div>
-
-      <div class="tiny">
-        If you’re in an in-app browser (Instagram/Facebook), tap ••• and choose “Open in browser” for best results.
-      </div>
     </div>
 
     <div class="footerNote">
@@ -405,9 +351,6 @@
     const submitBtn = document.getElementById('submitBtn');
     const spinner = document.getElementById('spinner');
     const submitText = document.getElementById('submitText');
-
-    const formCard = document.getElementById('formCard');
-    const successCard = document.getElementById('successCard');
 
     function validateEmail(showUI = true) {
       const val = (emailInput.value || '').trim();
@@ -455,7 +398,6 @@
       return ok;
     }
 
-    // ZIP: digits only, max 5
     zipInput.addEventListener('input', () => {
       zipInput.value = zipInput.value.replace(/\D/g, '').slice(0, 5);
       if (zipInput.value.length < 5) {
@@ -464,7 +406,6 @@
       }
     });
 
-    // Budget: digits only
     budgetInput.addEventListener('input', () => {
       budgetInput.value = budgetInput.value.replace(/\D/g, '').slice(0, 10);
       if (budgetInput.value === '') {
@@ -473,30 +414,12 @@
       }
     });
 
-    // Validate on blur
     emailInput.addEventListener('blur', () => validateEmail(true));
     zipInput.addEventListener('blur', () => validateZip(true));
     phoneInput.addEventListener('blur', () => validatePhone(true));
     budgetInput.addEventListener('blur', () => validateBudget(true));
-
-    // Hide warnings while typing (when empty)
-    emailInput.addEventListener('input', () => {
-      if ((emailInput.value || '').trim() === '') {
-        emailInput.classList.remove('invalid');
-        emailError.style.display = 'none';
-      }
-    });
-
-    phoneInput.addEventListener('input', () => {
-      if ((phoneInput.value || '').trim() === '') {
-        phoneInput.classList.remove('invalid');
-        phoneError.style.display = 'none';
-      }
-    });
-
     consentInput.addEventListener('change', () => validateConsent(true));
 
-    // ✅ Submit via fetch so we can show spinner + success page
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
 
@@ -515,7 +438,6 @@
         return;
       }
 
-      // ✅ disable button + show spinner
       submitBtn.disabled = true;
       spinner.style.display = 'inline-block';
       submitText.textContent = "Submitting...";
@@ -527,22 +449,26 @@
         const resp = await fetch(form.action, {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: body.toString()
+          body: body.toString(),
+          redirect: 'follow'
         });
 
         if (!resp.ok) {
           const html = await resp.text();
-          // Show server error page (keeps debugging easy)
           document.open();
           document.write(html);
           document.close();
           return;
         }
 
-        // ✅ success: swap to success card
-        formCard.style.display = 'none';
-        successCard.style.display = 'block';
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        // ✅ follow server redirect to /success
+        if (resp.redirected) {
+          window.location.href = resp.url;
+          return;
+        }
+
+        // fallback
+        window.location.href = "/success";
 
       } catch (err) {
         alert("Sorry — we could not submit your request. Please try again.");

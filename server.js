@@ -5,19 +5,18 @@ const admin = require('firebase-admin');
 
 const app = express();
 
-// ✅ Parse form posts
+// Parse form posts
 app.use(express.urlencoded({ extended: true }));
 
-// ✅ Serve ONLY public assets (safe)
+// Serve ONLY public assets
 const PUBLIC_DIR = path.join(__dirname, 'public');
 app.use(express.static(PUBLIC_DIR, {
-  // cache public assets (bg image) for speed in production
   maxAge: '7d',
   etag: true
 }));
 
 // -------------------------------------------
-// ✅ Initialize Firebase Admin (Heroku-safe)
+// Firebase Admin (Heroku-safe)
 // -------------------------------------------
 let serviceAccount;
 
@@ -37,6 +36,10 @@ const db = admin.firestore();
 // -------------------------------------------
 // Helpers
 // -------------------------------------------
+function noStore(res) {
+  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+}
+
 function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i.test(email);
 }
@@ -89,53 +92,46 @@ async function geocodeZipWithGoogle(zip) {
   };
 }
 
-// Helper: no-store headers for dynamic endpoints
-function noStore(res) {
-  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
-}
-
 // -------------------------------------------
-// ✅ Root: send desktop users to the landing page (prevents loops)
+// Routes
 // -------------------------------------------
 app.get('/', (req, res) => {
   noStore(res);
   return res.redirect(302, '/homeowners');
 });
 
-// -------------------------------------------
-// 🏠 Homeowners landing page
-// Served from /public/homeowners.html
-// -------------------------------------------
 app.get(['/homeowners', '/homeowners/'], (req, res) => {
   noStore(res);
   return res.sendFile(path.join(PUBLIC_DIR, 'homeowners.html'));
 });
+
 app.get(['/success', '/success/'], (req, res) => {
-  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+  noStore(res);
   return res.sendFile(path.join(PUBLIC_DIR, 'success.html'));
 });
+
 // -------------------------------------------
-// 📝 Lead capture endpoint → SAVE into Firestore
+// Lead capture
 // -------------------------------------------
 app.post(['/lead', '/lead/'], async (req, res) => {
   noStore(res);
 
-  const publicUserName   = String(req.body.name || '').trim();
-  const publicUserEmail  = String(req.body.email || '').trim().toLowerCase();
-  const rawPhone         = String(req.body.phone || '').trim();
-  const projectText      = String(req.body.project || '').trim();
-  const zip              = String(req.body.zip || '').trim();
+  const publicUserName  = String(req.body.name || '').trim();
+  const publicUserEmail = String(req.body.email || '').trim().toLowerCase();
+  const rawPhone        = String(req.body.phone || '').trim();
+  const projectText     = String(req.body.project || '').trim();
+  const zip             = String(req.body.zip || '').trim();
 
-  // ✅ Optional checkboxes
-  const readyToHire      = req.body.readyToHire === 'yes';
-  const urgent           = req.body.urgent === 'yes';
+  // Optional checkboxes
+  const readyToHire = req.body.readyToHire === 'yes';
+  const urgent      = req.body.urgent === 'yes';
 
-  // ✅ Optional budget (stored as Firestore number)
+  // Optional budget (stored as number)
   const rawBudget = String(req.body.budgetText || '').trim();
   const budgetDigits = rawBudget ? rawBudget.replace(/\D/g, '') : '';
   const budgetNumber = budgetDigits ? parseInt(budgetDigits, 10) : null;
 
-  // Consent
+  // Consent required
   const publicUserConcent = req.body.concent === 'yes';
 
   // Required checks
@@ -147,7 +143,6 @@ app.post(['/lead', '/lead/'], async (req, res) => {
     `);
   }
 
-  // Email format check
   if (!isValidEmail(publicUserEmail)) {
     return res.status(400).type('html').send(`
       <h2>Email format</h2>
@@ -164,7 +159,6 @@ app.post(['/lead', '/lead/'], async (req, res) => {
     `);
   }
 
-  // ZIP: 5 digits
   if (!/^\d{5}$/.test(zip)) {
     return res.status(400).type('html').send(`
       <h2>ZIP code format</h2>
@@ -198,18 +192,17 @@ app.post(['/lead', '/lead/'], async (req, res) => {
   }
 
   try {
-    // 1) Google geocode ZIP
+    // 1) Geocode ZIP
     const geo = await geocodeZipWithGoogle(zip);
 
-    // 2) Create ONE UID used for BOTH collections
+    // 2) Create ONE UID for both collections
     const publicDocRef = db.collection('PublicUserInfo').doc();
     const publicUserUID = publicDocRef.id;
     const locationDocRef = db.collection('UserLocation').doc(publicUserUID);
 
-    // 3) Batch write (atomic)
+    // 3) Batch write
     const batch = db.batch();
 
-    // Build payload (only set budgetText if provided)
     const publicPayload = {
       publicUserUID,
       publicUserName,
@@ -223,7 +216,7 @@ app.post(['/lead', '/lead/'], async (req, res) => {
     };
 
     if (budgetNumber !== null) {
-      publicPayload.budgetText = budgetNumber; // ✅ Firestore number
+      publicPayload.budgetText = budgetNumber; // number
     }
 
     batch.set(publicDocRef, publicPayload);
@@ -243,14 +236,8 @@ app.post(['/lead', '/lead/'], async (req, res) => {
 
     await batch.commit();
 
-    // If your frontend uses fetch and swaps to a success screen, 204 works well.
-    // But keeping HTML is fine too.
-    return res.type('html').send(`
-      <h2>✅ Thanks! Your project was submitted.</h2>
-      <p>Location saved for ZIP <b>${zip}</b>.</p>
-      <p><a href="/go">Download the app</a></p>
-      <p><a href="/homeowners">Submit another request</a></p>
-    `);
+    // ✅ redirect to success page so Google Ads conversion fires
+    return res.redirect(303, '/success');
 
   } catch (err) {
     console.error('Lead save/geocode failed:', err);
@@ -263,8 +250,7 @@ app.post(['/lead', '/lead/'], async (req, res) => {
 });
 
 // -------------------------------------------
-// /download route (safe HTTPS redirect)
-// Desktop fallback goes to homeowners page (NO LOOP)
+// /download route
 // -------------------------------------------
 app.get(['/download', '/download/'], (req, res) => {
   const ua = String(req.headers['user-agent'] || '').toLowerCase();
@@ -280,8 +266,7 @@ app.get(['/download', '/download/'], (req, res) => {
 });
 
 // -------------------------------------------
-// /go route (direct-open for app store links)
-// Desktop fallback goes to homeowners page (NO LOOP)
+// /go route (direct-open store)
 // -------------------------------------------
 app.get(['/go', '/go/'], (req, res) => {
   const ua  = String(req.headers['user-agent'] || '');
@@ -322,9 +307,7 @@ app.get(['/go', '/go/'], (req, res) => {
   return res.redirect(302, '/homeowners');
 });
 
-// -------------------------------------------
 // Health check
-// -------------------------------------------
 app.get('/healthz', (_req, res) => res.status(200).send('ok'));
 
 const PORT = process.env.PORT || 3000;

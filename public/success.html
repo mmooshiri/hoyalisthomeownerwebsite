@@ -22,11 +22,73 @@
       'currency': 'USD'
     });
   </script>
+
+  <style>
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+      background:
+        linear-gradient(180deg, rgba(0,0,0,.55), rgba(0,0,0,.25)),
+        url("/bg.jpg");
+      background-size:cover;
+      background-position:center;
+    }
+
+    .card{
+      max-width:720px;
+      width:100%;
+      background:#ffffffcc;
+      border-radius:18px;
+      padding:22px;
+      box-shadow:0 20px 60px rgba(0,0,0,.25);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    h1{margin:0 0 10px; font-size:28px;}
+    p{margin:0 0 14px; line-height:1.45;}
+
+    .btns{display:flex; gap:12px; flex-wrap:wrap; margin-top:10px;}
+    a{
+      text-decoration:none;
+      padding:14px 14px;
+      border-radius:14px;
+      font-weight:900;
+      text-align:center;
+      border:1px solid #e6e6e6;
+      background:#fff;
+      color:#111;
+      flex:1;
+      min-width:210px;
+    }
+
+    a.primary{
+      background:linear-gradient(90deg, #0a7cff, #005bd6);
+      color:#fff;
+      border:0;
+    }
+  </style>
 </head>
 <body>
-  <h1>✅ Success!</h1>
-  <p>Your request was submitted.</p>
-  <p><a href="/go">Download the app</a></p>
-  <p><a href="/homeowners">Submit another request</a></p>
+  <div class="card">
+    <h1>✅ Success!</h1>
+    <p>Your project was submitted.</p>
+    <p>Download the HoyaList app to see contractor responses and manage your request.</p>
+
+    <div class="btns">
+      <a class="primary" href="/go">Get the app (auto)</a>
+      <a href="https://apps.apple.com/us/app/hoyalist/id6740706168">Download on iPhone</a>
+      <a href="https://play.google.com/store/apps/details?id=com.hoyalist.hoyalist">Download on Android</a>
+    </div>
+
+    <p style="margin-top:16px;">
+      <a href="/homeowners" style="background:#fff;">Submit another project</a>
+    </p>
+  </div>
 </body>
 </html>
