@@ -13,17 +13,8 @@
     gtag('js', new Date());
     gtag('config', 'AW-16728099747');
   </script>
-  <!-- Google Ads conversion event (fires only on /success) -->
-<script>
-  gtag('event', 'conversion', {
-    'send_to': 'AW-16728099747/1s0lCOaQ27sbEKOXyqg-',
-    'value': 1.0,
-    'currency': 'USD'
-  });
-</script>
 
-
-  <!-- Event snippet for Sign-up conversion page -->
+  <!-- Google Ads conversion event (fire ONLY on /success) -->
   <script>
     gtag('event', 'conversion', {
       'send_to': 'AW-16728099747/1s0lCOaQ27sbEKOXyqg-',
@@ -33,35 +24,47 @@
   </script>
 
   <style>
-   body{
-  margin:0;
-  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-  min-height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:24px;
+    :root{
+      --primary:#0a7cff;
+      --primary2:#005bd6;
+      --card:#ffffffcc;
+      --shadow:0 20px 60px rgba(0,0,0,.25);
+      --radius:18px;
+    }
 
-  background: linear-gradient(135deg, #0a7cff, #002a66);
-}
-
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+      background: linear-gradient(135deg, #0a7cff, #002a66);
+    }
 
     .card{
-      max-width:720px;
+      max-width:760px;
       width:100%;
-      background:#ffffffcc;
-      border-radius:18px;
+      background:var(--card);
+      border-radius:var(--radius);
       padding:22px;
-      box-shadow:0 20px 60px rgba(0,0,0,.25);
+      box-shadow:var(--shadow);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
     }
 
-    h1{margin:0 0 10px; font-size:28px;}
-    p{margin:0 0 14px; line-height:1.45;}
+    h1{ margin:0 0 10px; font-size:28px; }
+    p{ margin:0 0 14px; line-height:1.45; }
 
-    .btns{display:flex; gap:12px; flex-wrap:wrap; margin-top:10px;}
-    a{
+    .btns{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-top:10px;
+    }
+
+    .btn{
       text-decoration:none;
       padding:14px 14px;
       border-radius:14px;
@@ -72,15 +75,29 @@
       color:#111;
       flex:1;
       min-width:210px;
+      display:inline-block;
     }
 
-    a.primary{
-      background:linear-gradient(90deg, #0a7cff, #005bd6);
+    .btn.primary{
+      background:linear-gradient(90deg, var(--primary), var(--primary2));
       color:#fff;
       border:0;
     }
+
+    .btn.secondary{
+      background:#fff;
+      color:#111;
+    }
+
+    .note{
+      margin-top:14px;
+      font-size:12px;
+      opacity:.8;
+      line-height:1.35;
+    }
   </style>
 </head>
+
 <body>
   <div class="card">
     <h1>✅ Success!</h1>
@@ -88,14 +105,18 @@
     <p>Download the HoyaList app to see contractor responses and manage your request.</p>
 
     <div class="btns">
-      <a class="primary" href="/go">Get the app (auto)</a>
-      <a href="https://apps.apple.com/us/app/hoyalist/id6740706168">Download on iPhone</a>
-      <a href="https://play.google.com/store/apps/details?id=com.hoyalist.hoyalist">Download on Android</a>
+      <a class="btn primary" href="/go">Get the app (auto)</a>
+      <a class="btn" href="https://apps.apple.com/us/app/hoyalist/id6740706168" rel="noopener">Download on iPhone</a>
+      <a class="btn" href="https://play.google.com/store/apps/details?id=com.hoyalist.hoyalist" rel="noopener">Download on Android</a>
     </div>
 
-    <p style="margin-top:16px;">
-      <a href="/homeowners" style="background:#fff;">Submit another project</a>
-    </p>
+    <div class="btns" style="margin-top:12px;">
+      <a class="btn secondary" href="/homeowners">Submit another project</a>
+    </div>
+
+    <div class="note">
+      Tip: If you’re in an in-app browser (Instagram/Facebook), tap ••• and choose “Open in browser” for best results.
+    </div>
   </div>
 </body>
 </html>
