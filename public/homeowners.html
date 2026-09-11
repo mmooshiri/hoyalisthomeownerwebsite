@@ -333,6 +333,9 @@
   <option value="General Laborer">General Labor</option>
   <option value="Other">Other</option>
 </select>
+<div id="projectTradeError" class="errorText">
+  Please select a project type.
+</div>
 
         <label>What do you need done?</label>
         <textarea id="project" name="project" required maxlength="1200"
@@ -391,6 +394,7 @@
     const consentError = document.getElementById('consentError');
 
     const projectTradeInput = document.getElementById('projectTrade');
+    const projectTradeError = document.getElementById('projectTradeError');
 
     const submitBtn = document.getElementById('submitBtn');
     const spinner = document.getElementById('spinner');
@@ -405,13 +409,16 @@
       }
       return ok;
     }
-    function validateProjectTrade() {
+     function validateProjectTrade(showUI = true) {
       const ok = (projectTradeInput.value || '').trim() !== '';
 
-     projectTradeInput.classList.toggle('invalid', !ok);
+     if (showUI) {
+        projectTradeInput.classList.toggle('invalid', !ok);
+       projectTradeError.style.display = ok ? 'none' : 'block';
+     }
 
-     return ok;
-    }
+      return ok;
+     } 
 
     function validateZip(showUI = true) {
       const val = (zipInput.value || '').trim();
@@ -456,7 +463,7 @@
         zipError.style.display = 'none';
       }
     });
-    projectTradeInput.addEventListener('change', () => validateProjectTrade());
+    projectTradeInput.addEventListener('change', () => validateProjectTrade(true));
 
     budgetInput.addEventListener('input', () => {
       budgetInput.value = budgetInput.value.replace(/\D/g, '').slice(0, 10);
@@ -481,7 +488,7 @@
       const phoneOk = validatePhone(true);
       const budgetOk = validateBudget(true);
       const consentOk = validateConsent(true);
-      const projectTradeOk = validateProjectTrade();
+      const projectTradeOk = validateProjectTrade(true);
 
       if (!emailOk) { emailInput.focus(); return; }
       if (!zipOk) { zipInput.focus(); return; }
