@@ -100,7 +100,7 @@
       font-size:14px;
     }
 
-    input, textarea{
+    input, textarea, select{
       width:100%;
       padding:12px 12px;
       border:1px solid #d9d9d9;
@@ -111,7 +111,7 @@
       background:#fff;
     }
 
-    input:focus, textarea:focus{
+    input:focus, textarea:focus, select:focus{
       border-color:rgba(10,124,255,.55);
       box-shadow:0 0 0 4px rgba(10,124,255,.12);
     }
@@ -287,6 +287,52 @@
             <b>Urgent</b> (optional): This project is urgent and I need help quickly.
           </div>
         </div>
+        <label>What type of project is this?</label>
+
+<select id="projectTrade" name="projectTrade" required>
+  <option value="">Select a project type</option>
+
+  <option value="Heating, Air Conditioning, and Refrigeration Mechanics and Installers">
+    Heating, Air Conditioning, and Refrigeration
+  </option>
+
+  <option value="Electrician">Electrical</option>
+  <option value="Carpenter">Carpentry</option>
+  <option value="Painter">Painting</option>
+  <option value="HVAC Technician">HVAC</option>
+  <option value="Roofer">Roofing</option>
+  <option value="Landscaper">Landscaping</option>
+  <option value="Mason">Masonry</option>
+  <option value="Plumber">Plumbing</option>
+  <option value="Drywall Installer">Drywall</option>
+  <option value="Welder">Welding</option>
+  <option value="Flooring Installer">Flooring</option>
+  <option value="Ironworker">Ironwork</option>
+  <option value="Concrete Worker">Concrete</option>
+  <option value="Glazier">Glass / Glazing</option>
+  <option value="Crane and Tower Services">Crane and Tower Services</option>
+  <option value="Elevator Installers and Repairers">Elevator Installation / Repair</option>
+  <option value="Sheet Metal Worker">Sheet Metal</option>
+  <option value="Solar Panel Installer">Solar Panels</option>
+  <option value="Structural Engineer">Structural Engineering</option>
+  <option value="General Contractor">General Contracting</option>
+  <option value="Tile Setter">Tile</option>
+  <option value="Insulation Worker">Insulation</option>
+  <option value="Boilermaker">Boiler Services</option>
+  <option value="Pipefitter">Pipefitting</option>
+  <option value="Crane Operator">Crane Operator</option>
+  <option value="Demolition Specialist">Demolition</option>
+  <option value="Locksmith">Locksmith</option>
+  <option value="Pavers">Paving</option>
+  <option value="Sidings and Gutter services">Siding and Gutters</option>
+  <option value="Generator Services">Generator Services</option>
+  <option value="Garage Doors services">Garage Door Services</option>
+  <option value="Pool Services">Pool Services</option>
+  <option value="Appliance Services">Appliance Services</option>
+  <option value="Excavators">Excavation</option>
+  <option value="General Laborer">General Labor</option>
+  <option value="Other">Other</option>
+</select>
 
         <label>What do you need done?</label>
         <textarea id="project" name="project" required maxlength="1200"
@@ -344,6 +390,8 @@
     const consentInput = document.getElementById('concent');
     const consentError = document.getElementById('consentError');
 
+    const projectTradeInput = document.getElementById('projectTrade');
+
     const submitBtn = document.getElementById('submitBtn');
     const spinner = document.getElementById('spinner');
     const submitText = document.getElementById('submitText');
@@ -356,6 +404,13 @@
         emailError.style.display = ok ? 'none' : 'block';
       }
       return ok;
+    }
+    function validateProjectTrade() {
+      const ok = (projectTradeInput.value || '').trim() !== '';
+
+     projectTradeInput.classList.toggle('invalid', !ok);
+
+     return ok;
     }
 
     function validateZip(showUI = true) {
@@ -401,6 +456,7 @@
         zipError.style.display = 'none';
       }
     });
+    projectTradeInput.addEventListener('change', () => validateProjectTrade());
 
     budgetInput.addEventListener('input', () => {
       budgetInput.value = budgetInput.value.replace(/\D/g, '').slice(0, 10);
@@ -415,6 +471,7 @@
     phoneInput.addEventListener('blur', () => validatePhone(true));
     budgetInput.addEventListener('blur', () => validateBudget(true));
     consentInput.addEventListener('change', () => validateConsent(true));
+    
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -424,11 +481,13 @@
       const phoneOk = validatePhone(true);
       const budgetOk = validateBudget(true);
       const consentOk = validateConsent(true);
+      const projectTradeOk = validateProjectTrade();
 
       if (!emailOk) { emailInput.focus(); return; }
       if (!zipOk) { zipInput.focus(); return; }
       if (!phoneOk) { phoneInput.focus(); return; }
       if (!budgetOk) { budgetInput.focus(); return; }
+      if (!projectTradeOk) { projectTradeInput.focus(); return; }
       if (!consentOk) {
         consentInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
         return;

@@ -120,6 +120,7 @@ app.post(['/lead', '/lead/'], async (req, res) => {
   const publicUserEmail = String(req.body.email || '').trim().toLowerCase();
   const rawPhone        = String(req.body.phone || '').trim();
   const projectText     = String(req.body.project || '').trim();
+  const projectTrade    = String(req.body.projectTrade || '').trim();
   const zip             = String(req.body.zip || '').trim();
 
   // Optional checkboxes
@@ -133,12 +134,13 @@ app.post(['/lead', '/lead/'], async (req, res) => {
 
   // Consent required
   const publicUserConcent = req.body.concent === 'yes';
+  
 
   // Required checks
-  if (!publicUserName || !publicUserEmail || !projectText || !zip) {
+  if (!publicUserName || !publicUserEmail || !projectText || !projectTrade || !zip) {
     return res.status(400).type('html').send(`
       <h2>Missing information</h2>
-      <p>Please provide name, email, ZIP code, and project description.</p>
+      <p>Please provide name, email, ZIP code, project type, and project description.</p>
       <p><a href="/homeowners">Back to form</a></p>
     `);
   }
@@ -209,6 +211,7 @@ app.post(['/lead', '/lead/'], async (req, res) => {
       publicUserEmail,
       publicUserPhone,
       projectText,
+      projectTrade,
       readyToHire,
       urgent,
       publicUserConcent,
