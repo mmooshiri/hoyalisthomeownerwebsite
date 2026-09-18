@@ -257,14 +257,19 @@
           </div>
 
           <div class="col">
-            <label>Phone (optional)</label>
+            <label>Phone (required)</label>
             <input id="phone" name="phone" inputmode="tel"
-                placeholder="(860) 555-1234" maxlength="20" autocomplete="tel" />
-            <div class="small">Enter a U.S. phone number (example: <b>(860) 555-1234</b>).</div>
-              Phone number must be in E.164 format like <b>+18885551234</b>.
+                required
+                placeholder="(860) 555-1234"
+                maxlength="20"
+                autocomplete="tel" />
+            <div class="small">
+              Contractors can use this number to contact you about your project.
+            </div>
+            <div id="phoneError" class="errorText">
+              Please enter a valid 10-digit U.S. phone number.
             </div>
           </div>
-        </div>
 
         <div class="row">
           <div class="col">
@@ -435,12 +440,21 @@
     }
 
     function validatePhone(showUI = true) {
-      const val = (phoneInput.value || '').trim();
-      const ok = (val === '') || E164_RE.test(val);
+      const raw = (phoneInput.value || '').trim();
+      let digits = raw.replace(/\D/g, '');
+
+    // Allow either 10 digits or 11 digits beginning with 1
+      if (digits.length === 11 && digits.startsWith('1')) {
+      digits = digits.substring(1);
+      }
+
+      const ok = /^\d{10}$/.test(digits);
+
       if (showUI) {
         phoneInput.classList.toggle('invalid', !ok);
         phoneError.style.display = ok ? 'none' : 'block';
       }
+
       return ok;
     }
 
