@@ -384,14 +384,14 @@
         </button>
 
         <div class="small" style="margin-top:12px;">
-          We use your ZIP code to match you with nearby contractors.
-          We only use your phone number if you provide it.
+          Your contact information helps local contractors respond to your project.
+          Your information is used only for your HoyaList project request.
         </div>
       </form>
     </div>
 
     <div class="footerNote">
-      Powered by HoyaList • Your info is used only for contractor matching.
+      Powered by HoyaList •
     </div>
 
   </div>
@@ -540,10 +540,20 @@
       submitText.textContent = "Submitting...";
 
       try {
-        const formData = new FormData(form);
-        const body = new URLSearchParams(formData);
+          const formData = new FormData(form);
 
-        const resp = await fetch(form.action, {
+         // Convert the homeowner's phone number to E.164 format
+          let phoneDigits = (phoneInput.value || '').replace(/\D/g, '');
+
+            if (phoneDigits.length === 11 && phoneDigits.startsWith('1')) {
+              phoneDigits = phoneDigits.substring(1);
+              }
+
+              formData.set('phone', '+1' + phoneDigits);
+
+          const body = new URLSearchParams(formData);
+
+          const resp = await fetch(form.action, {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
           body: body.toString(),
