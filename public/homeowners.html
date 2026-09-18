@@ -264,7 +264,7 @@
                 maxlength="20"
                 autocomplete="tel" />
             <div class="small">
-              Contractors can use this number to contact you about your project.
+              HoyaList uses this number to send you notifications about your project.
               </div>
                 <div id="phoneError" class="errorText">
                     Please enter a valid 10-digit U.S. phone number.
@@ -370,8 +370,10 @@
         <div class="checkRow">
           <input id="concent" type="checkbox" name="concent" value="yes" />
           <div class="small">
-            <b>Consent:</b> I agree to receive messages about my request from HoyaList.
-            Msg &amp; data rates may apply. Reply <b>STOP</b> to opt out.
+            <b>Consent:</b> I agree to receive text messages from HoyaList
+              about my project, including notifications when a contractor
+              expresses interest.
+              Msg &amp; data rates may apply. Reply <b>STOP</b> to opt out.
             <div id="consentError" class="errorText" style="margin-top:8px;">
               Please check this box to submit your request.
             </div>
@@ -384,7 +386,7 @@
         </button>
 
         <div class="small" style="margin-top:12px;">
-          Your contact information helps local contractors respond to your project.
+          Your contact information allows HoyaList to notify you about your project.
           Your information is used only for your HoyaList project request.
         </div>
       </form>
@@ -397,7 +399,6 @@
   </div>
 
   <script>
-    const E164_RE  = /^\+[1-9]\d{9,14}$/;
     const ZIP_RE   = /^\d{5}$/;
     const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
     const BUDGET_RE = /^\d+$/;
