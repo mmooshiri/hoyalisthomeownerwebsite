@@ -265,88 +265,105 @@
                 autocomplete="tel" />
             <div class="small">
               Contractors can use this number to contact you about your project.
+              </div>
+                <div id="phoneError" class="errorText">
+                    Please enter a valid 10-digit U.S. phone number.
+                </div>
+              </div>
             </div>
-            <div id="phoneError" class="errorText">
-              Please enter a valid 10-digit U.S. phone number.
-            </div>
-          </div>
 
-        <div class="row">
-          <div class="col">
-            <label>Budget (optional)</label>
-            <input id="budgetText" name="budgetText" inputmode="numeric"
-                   placeholder="2500" maxlength="10" />
-            <div class="small">Numbers only (example: <b>2500</b>).</div>
-            <div id="budgetError" class="errorText">
-              Budget must be numbers only (example: <b>2500</b>).
-            </div>
-          </div>
-        </div>
+        <label>Budget (optional)</label>
+          <input id="budgetText" name="budgetText" inputmode="numeric"
+                placeholder="2500" maxlength="10" />
 
-        <div class="checkRow">
-          <input id="readyToHire" type="checkbox" name="readyToHire" value="yes" />
           <div class="small">
-            <b>Ready to hire</b> (optional): I’m ready to hire a contractor soon.
+              Numbers only (example: <b>2500</b>).
           </div>
-        </div>
 
-        <div class="checkRow">
-          <input id="urgent" type="checkbox" name="urgent" value="yes" />
-          <div class="small">
-            <b>Urgent</b> (optional): This project is urgent and I need help quickly.
+          <div id="budgetError" class="errorText">
+                Budget must be numbers only (example: <b>2500</b>).
           </div>
-        </div>
+
+
+          <div class="checkRow">
+            <input  id="readyToHire"
+                    type="checkbox"
+                    name="readyToHire"
+                    value="yes" />
+
+            <div class="small">
+                <b>Ready to hire</b> (optional):
+                    I’m ready to hire a contractor soon.
+            </div>
+          </div>
+
+
+          <div class="checkRow">
+            <input id="urgent"
+                    type="checkbox"
+                    name="urgent"
+                    value="yes" />
+
+            <div class="small">
+              <b>Urgent</b> (optional):
+              This project is urgent and I need help quickly.
+            </div>
+          </div>
+
+
         <label>What type of project is this?</label>
 
-<select id="projectTrade" name="projectTrade" required>
-  <option value="">Select a project type</option>
+        <select id="projectTrade" name="projectTrade" required>
+          <option value="">Select a project type</option>
 
-  <option value="Heating, Air Conditioning, and Refrigeration Mechanics and Installers">
-    Heating, Air Conditioning, and Refrigeration
-  </option>
+          <option value="Heating, Air Conditioning, and Refrigeration Mechanics and Installers">
+              Heating, Air Conditioning, and Refrigeration
+          </option>
 
-  <option value="Electrician">Electrical</option>
-  <option value="Carpenter">Carpentry</option>
-  <option value="Painter">Painting</option>
-  <option value="HVAC Technician">HVAC</option>
-  <option value="Roofer">Roofing</option>
-  <option value="Landscaper">Landscaping</option>
-  <option value="Mason">Masonry</option>
-  <option value="Plumber">Plumbing</option>
-  <option value="Drywall Installer">Drywall</option>
-  <option value="Welder">Welding</option>
-  <option value="Flooring Installer">Flooring</option>
-  <option value="Ironworker">Ironwork</option>
-  <option value="Concrete Worker">Concrete</option>
-  <option value="Glazier">Glass / Glazing</option>
-  <option value="Crane and Tower Services">Crane and Tower Services</option>
-  <option value="Elevator Installers and Repairers">Elevator Installation / Repair</option>
-  <option value="Sheet Metal Worker">Sheet Metal</option>
-  <option value="Solar Panel Installer">Solar Panels</option>
-  <option value="Structural Engineer">Structural Engineering</option>
-  <option value="General Contractor">General Contracting</option>
-  <option value="Tile Setter">Tile</option>
-  <option value="Insulation Worker">Insulation</option>
-  <option value="Boilermaker">Boiler Services</option>
-  <option value="Pipefitter">Pipefitting</option>
-  <option value="Crane Operator">Crane Operator</option>
-  <option value="Demolition Specialist">Demolition</option>
-  <option value="Locksmith">Locksmith</option>
-  <option value="Pavers">Paving</option>
-  <option value="Sidings and Gutter services">Siding and Gutters</option>
-  <option value="Generator Services">Generator Services</option>
-  <option value="Garage Doors services">Garage Door Services</option>
-  <option value="Pool Services">Pool Services</option>
-  <option value="Appliance Services">Appliance Services</option>
-  <option value="Excavators">Excavation</option>
-  <option value="General Laborer">General Labor</option>
-  <option value="Other">Other</option>
-</select>
-<div id="projectTradeError" class="errorText">
-  Please select a project type.
-</div>
+          <option value="Electrician">Electrical</option>
+          <option value="Carpenter">Carpentry</option>
+          <option value="Painter">Painting</option>
+          <option value="HVAC Technician">HVAC</option>
+          <option value="Roofer">Roofing</option>
+          <option value="Landscaper">Landscaping</option>
+          <option value="Mason">Masonry</option>
+          <option value="Plumber">Plumbing</option>
+          <option value="Drywall Installer">Drywall</option>
+          <option value="Welder">Welding</option>
+          <option value="Flooring Installer">Flooring</option>
+          <option value="Ironworker">Ironwork</option>
+          <option value="Concrete Worker">Concrete</option>
+          <option value="Glazier">Glass / Glazing</option>
+          <option value="Crane and Tower Services">Crane and Tower Services</option>
+          <option value="Elevator Installers and Repairers">Elevator Installation / Repair</option>
+          <option value="Sheet Metal Worker">Sheet Metal</option>
+          <option value="Solar Panel Installer">Solar Panels</option>
+          <option value="Structural Engineer">Structural Engineering</option>
+          <option value="General Contractor">General Contracting</option>
+          <option value="Tile Setter">Tile</option>
+          <option value="Insulation Worker">Insulation</option>
+          <option value="Boilermaker">Boiler Services</option>
+          <option value="Pipefitter">Pipefitting</option>
+          <option value="Crane Operator">Crane Operator</option>
+          <option value="Demolition Specialist">Demolition</option>
+          <option value="Locksmith">Locksmith</option>
+          <option value="Pavers">Paving</option>
+          <option value="Sidings and Gutter services">Siding and Gutters</option>
+          <option value="Generator Services">Generator Services</option>
+          <option value="Garage Doors services">Garage Door Services</option>
+          <option value="Pool Services">Pool Services</option>
+          <option value="Appliance Services">Appliance Services</option>
+          <option value="Excavators">Excavation</option>
+          <option value="General Laborer">General Labor</option>
+          <option value="Other">Other</option>
+        </select>
+
+        <div id="projectTradeError" class="errorText">
+              Please select a project type.
+        </div>
 
         <label>What do you need done?</label>
+
         <textarea id="project" name="project" required maxlength="1200"
           placeholder="Example: Replace water heater. Need it this week."></textarea>
 
